@@ -50,34 +50,41 @@
 #include <uORB/uORB.h>
 #include <uORB/topics/sensor_combined.h>
 #include <uORB/topics/vehicle_attitude.h>
+#include <uORB/topics/position_setpoint_triplet.h>
+#include <uORB/topics/vehicle_global_position.h>
 
 __EXPORT int px4_simple_app_main(int argc, char *argv[]);
 
 int px4_simple_app_main(int argc, char *argv[])
 {
-	PX4_INFO("Hello Sky!");
+    struct position_setpoint_triplet_s raw;
+    struct vehicle_global_position_s raw2;
 
-	/* subscribe to sensor_combined topic */
-	int sensor_sub_fd = orb_subscribe(ORB_ID(sensor_combined));
-	/* limit the update rate to 5 Hz */
-	orb_set_interval(sensor_sub_fd, 200);
+    memset(&raw, 0, sizeof(raw));
+    memset(&raw2, 0, sizeof(raw2));
 
-	/* advertise attitude topic */
-	struct vehicle_attitude_s att;
-	memset(&att, 0, sizeof(att));
-	orb_advert_t att_pub = orb_advertise(ORB_ID(vehicle_attitude), &att);
+    bool glob_position_updated = false;
 
-	/* one could wait for multiple topics with this technique, just using one here */
+    /* subscribe to sensor_combined topic */
+    int att_sub = orb_subscribe(ORB_ID(vehicle_attitude));
+	int sensor_sub_fd = orb_subscribe(ORB_ID(position_setpoint_triplet));
+    int glob_position = orb_subscribe(ORB_ID(vehicle_global_position));
+
+    int error_counter = 0;
+
+    orb_set_interval(sensor_sub_fd, 200);
+    orb_set_interval(glob_position, 200);
+
+    /* one could wait for multiple topics with this technique, just using one here */
 	px4_pollfd_struct_t fds[] = {
-		{ .fd = sensor_sub_fd,   .events = POLLIN },
+		{ .fd = att_sub,   .events = POLLIN },
 		/* there could be more file descriptors here, in the form like:
 		 * { .fd = other_sub_fd,   .events = POLLIN },
 		 */
 	};
 
-	int error_counter = 0;
 
-	for (int i = 0; i < 5; i++) {
+	while (true) {
 		/* wait for sensor update of 1 file descriptor for 1000 ms (1 second) */
 		int poll_ret = px4_poll(fds, 1, 1000);
 
@@ -85,6 +92,7 @@ int px4_simple_app_main(int argc, char *argv[])
 		if (poll_ret == 0) {
 			/* this means none of our providers is giving us data */
 			PX4_ERR("Got no data within a second");
+			error_counter++;
 
 		} else if (poll_ret < 0) {
 			/* this is seriously bad - should be an emergency */
@@ -99,29 +107,42 @@ int px4_simple_app_main(int argc, char *argv[])
 
 			if (fds[0].revents & POLLIN) {
 				/* obtained data for the first file descriptor */
-				struct sensor_combined_s raw;
+
+
+				orb_check(glob_position,&glob_position_updated);
+
+				if (glob_position_updated){
+                    PX4_INFO("%i",glob_position_updated);
+                    orb_copy(ORB_ID(vehicle_global_position), glob_position, &raw2);
+                }
+
 				/* copy sensors raw data into local buffer */
-				orb_copy(ORB_ID(sensor_combined), sensor_sub_fd, &raw);
-				PX4_INFO("Accelerometer:\t%8.4f\t%8.4f\t%8.4f",
-					 (double)raw.accelerometer_m_s2[0],
-					 (double)raw.accelerometer_m_s2[1],
-					 (double)raw.accelerometer_m_s2[2]);
+				orb_copy(ORB_ID(position_setpoint_triplet), sensor_sub_fd, &raw);
+
+				double diff_lat = raw.current.lat - raw2.lat;
+				double diff_lon = raw.current.lon - raw2.lon;
+
+				if ((diff_lat <= 0.000100) & (diff_lon <= 0.000100) & (diff_lat >= -0.000100) & (diff_lon >= -0.000100) ){
+				    PX4_INFO("ALMOST THERE! \t%f\t%f",raw.current.lat - raw2.lat,raw.current.lon - raw2.lon);
+				}
+
 
 				/* set att and publish this information for other apps
 				 the following does not have any meaning, it's just an example
 				*/
-				att.q[0] = raw.accelerometer_m_s2[0];
-				att.q[1] = raw.accelerometer_m_s2[1];
-				att.q[2] = raw.accelerometer_m_s2[2];
 
-				orb_publish(ORB_ID(vehicle_attitude), att_pub, &att);
 			}
 
 			/* there could be more file descriptors here, in the form like:
 			 * if (fds[1..n].revents & POLLIN) {}
 			 */
 		}
+        if(error_counter > 50){
+            break;
+        }
 	}
+
+
 
 	PX4_INFO("exiting");
 

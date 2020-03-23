@@ -46,6 +46,7 @@ px4_add_board(
 		vtol_att_control
 		airspeed_selector
 		gpio_switching
+		waypoint_detect
 
 	SYSTEMCMDS
 		#bl_update

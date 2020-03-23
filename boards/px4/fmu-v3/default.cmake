@@ -85,7 +85,7 @@ px4_add_board(
 		vmount
 		vtol_att_control
 		airspeed_selector
-
+		gpio_switching
 	SYSTEMCMDS
 		bl_update
 		config

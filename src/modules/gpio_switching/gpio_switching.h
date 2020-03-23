@@ -4,6 +4,8 @@
 
 class gpio_switching {
 
+    public:
+        void main();
 };
 
 

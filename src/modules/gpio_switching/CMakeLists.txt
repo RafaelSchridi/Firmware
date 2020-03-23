@@ -31,12 +31,10 @@
 #
 ############################################################################
 px4_add_module(
-	MODULE modules__load_mon
-	MAIN load_mon
+	MODULE modules__gpio_switching
+	MAIN gpio_switching
 	COMPILE_FLAGS
 	SRCS
-		load_mon.cpp
-	DEPENDS
-		px4_work_queue
+		gpio_switching.cpp
 	)
 

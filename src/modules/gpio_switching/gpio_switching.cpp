@@ -11,7 +11,22 @@
 extern "C" __EXPORT  int gpio_switching_main();
 
 int gpio_switching_main() {
-    px4_arch_gpiowrite(GPIO_TIM1_CH1OUT,1);
-    PX4_INFO("Switching");
+    px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
+
+    int count = 0;
+
+    while (count < 100){
+
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
+
+        px4_usleep(1000000);
+
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,1);
+
+        px4_usleep(1000000);
+
+        PX4_INFO("this should do something");
+
+        count++;
     return 0;
 };

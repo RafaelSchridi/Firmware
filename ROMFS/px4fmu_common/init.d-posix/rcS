@@ -211,6 +211,7 @@ gpssim start
 sensors start
 commander start
 navigator start
+waypointdetect start
 
 
 if ! param compare -s MNT_MODE_IN -1

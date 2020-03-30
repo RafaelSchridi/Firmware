@@ -126,16 +126,9 @@ int px4_simple_app_main(int argc, char *argv[])
 				    PX4_INFO("ALMOST THERE! \t%f\t%f",raw.current.lat - raw2.lat,raw.current.lon - raw2.lon);
 				}
 
-
-				/* set att and publish this information for other apps
-				 the following does not have any meaning, it's just an example
-				*/
-
 			}
 
-			/* there could be more file descriptors here, in the form like:
-			 * if (fds[1..n].revents & POLLIN) {}
-			 */
+
 		}
         if(error_counter > 50){
             break;

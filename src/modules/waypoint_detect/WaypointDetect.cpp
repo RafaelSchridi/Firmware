@@ -11,6 +11,7 @@
 #include <px4_posix.h>
 #include <px4_tasks.h>
 #include <px4_time.h>
+#include <arch/board/board.h>
 
 #include <uORB/uORB.h>
 #include <uORB/topics/sensor_combined.h>
@@ -45,15 +46,9 @@ public:
 
 private:
 
-
-    bool glob_position_updated = false;
-
-
-    int error_counter = 0;
 };
 
-WayPointDetect::WayPointDetect()
-{
+WayPointDetect::WayPointDetect() {
 
 }
 
@@ -62,71 +57,24 @@ WayPointDetect::~WayPointDetect() {
 }
 
 void WayPointDetect::run() {
-    int att_sub = orb_subscribe(ORB_ID(vehicle_attitude));
-    int sensor_sub_fd = orb_subscribe(ORB_ID(position_setpoint_triplet));
-    int glob_position = orb_subscribe(ORB_ID(vehicle_global_position));
+
+    px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
+    px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
 
 
-    px4_pollfd_struct_t fds[] = {
-            { .fd = att_sub,   .events = POLLIN },
-    };
+    while (true){
 
-    struct position_setpoint_triplet_s raw;
-    struct vehicle_global_position_s raw2;
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
 
-    while(!should_exit()){
-        /* wait for sensor update of 1 file descriptor for 1000 ms (1 second) */
-        int poll_ret = px4_poll(fds, 1, 1000);
+        px4_usleep(1000000);
 
-        /* handle the poll result */
-        if (poll_ret == 0) {
-            /* this means none of our providers is giving us data */
-            PX4_ERR("Got no data within a second");
-            error_counter++;
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,1);
 
-        } else if (poll_ret < 0) {
-            /* this is seriously bad - should be an emergency */
-            if (error_counter < 10 || error_counter % 50 == 0) {
-                /* use a counter to prevent flooding (and slowing us down) */
-                PX4_ERR("ERROR return value from poll(): %d", poll_ret);
-            }
+        px4_usleep(1000000);
 
-            error_counter++;
+        PX4_INFO("this should do something");
 
-        } else {
-
-            if (fds[0].revents & POLLIN) {
-                /* obtained data for the first file descriptor */
-
-
-                orb_check(glob_position,&glob_position_updated);
-
-                if (glob_position_updated){
-                    orb_copy(ORB_ID(vehicle_global_position), glob_position, &raw2);
-                }
-
-                /* copy sensors raw data into local buffer */
-                orb_copy(ORB_ID(position_setpoint_triplet), sensor_sub_fd, &raw);
-
-                double diff_lat = raw.current.lat - raw2.lat;
-                double diff_lon = raw.current.lon - raw2.lon;
-
-                if ((diff_lat <= 0.000100) & (diff_lon <= 0.000100) & (diff_lat >= -0.000100) & (diff_lon >= -0.000100) ){
-                    PX4_INFO("ALMOST THERE! \t%f\t%f",raw.current.lat - raw2.lat,raw.current.lon - raw2.lon);
-                }
-
-            }
-
-
-        }
-        if(error_counter > 50){
-            break;
-        }
     }
-
-    orb_unsubscribe(att_sub);
-    orb_unsubscribe(sensor_sub_fd);
-    orb_unsubscribe(glob_position);
 }
 
 

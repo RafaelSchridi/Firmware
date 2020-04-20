@@ -27,6 +27,6 @@ int gpio_switching_main() {
 
         PX4_INFO("this should do something");
 
-        count++;
+        count++;}
     return 0;
-};
+}

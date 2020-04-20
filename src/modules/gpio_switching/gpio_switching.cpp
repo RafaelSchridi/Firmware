@@ -15,13 +15,13 @@ int gpio_switching_main() {
 
     int count = 0;
 
-    while (count < 100){
+    while (count < 100) {
 
-        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT, 0);
 
         px4_usleep(1000000);
 
-        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,1);
+        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT, 1);
 
         px4_usleep(1000000);
 

@@ -166,6 +166,8 @@ private:
 	void handle_message_utm_global_position(mavlink_message_t *msg);
 	void handle_message_vision_position_estimate(mavlink_message_t *msg);
 
+	void handle_message_custom(mavlink_custom_t *msg);
+
 
 	void Run();
 

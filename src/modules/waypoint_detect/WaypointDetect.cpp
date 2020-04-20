@@ -58,6 +58,7 @@ WayPointDetect::~WayPointDetect() {
 
 void WayPointDetect::run() {
 
+    #if defined GPIO_GPIO0_OUTPUT
     px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
     px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
 
@@ -75,6 +76,7 @@ void WayPointDetect::run() {
         PX4_INFO("this should do something");
 
     }
+    #endif
 }
 
 

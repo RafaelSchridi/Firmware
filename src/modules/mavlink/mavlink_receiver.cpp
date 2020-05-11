@@ -2729,8 +2729,3 @@ MavlinkReceiver::receive_start(pthread_t *thread, Mavlink *parent)
 
 	pthread_attr_destroy(&receiveloop_attr);
 }
-
-void MavlinkReceiver::handle_message_custom(mavlink_custom_t *msg) {
-
-    
-}

@@ -98,25 +98,6 @@
 #include <uORB/topics/vehicle_status.h>
 #include <uORB/topics/vehicle_trajectory_waypoint.h>
 
-
-typedef struct __custom_message {
-    uint8_t msg_received;               ///< Number of received messages
-    uint8_t buffer_overrun;             ///< Number of buffer overruns
-    uint8_t parse_error;                ///< Number of parse errors
-    mavlink_parse_state_t parse_state;  ///< Parsing state machine
-    uint8_t packet_idx;                 ///< Index in current packet
-    uint8_t current_rx_seq;             ///< Sequence number of last packet received
-    uint8_t current_tx_seq;             ///< Sequence number of last packet sent
-    uint16_t packet_rx_success_count;   ///< Received packets
-    uint16_t packet_rx_drop_count;      ///< Number of packet drops
-    uint8_t flags;                      ///< MAVLINK_STATUS_FLAG_*
-    uint8_t signature_wait;             ///< number of signature bytes left to receive
-    struct __mavlink_signing *signing;  ///< optional signing state
-    struct __mavlink_signing_streams *signing_streams; ///< global record of stream timestamps
-} mavlink_custom_t;
-
-
-
 class Mavlink;
 
 class MavlinkReceiver : public ModuleParams
@@ -184,8 +165,6 @@ private:
 	void handle_message_trajectory_representation_waypoints(mavlink_message_t *msg);
 	void handle_message_utm_global_position(mavlink_message_t *msg);
 	void handle_message_vision_position_estimate(mavlink_message_t *msg);
-
-	void handle_message_custom(mavlink_custom_t *msg);
 
 
 	void Run();

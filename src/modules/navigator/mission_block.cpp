@@ -442,7 +442,7 @@ MissionBlock::issue_command(const mission_item_s &item)
 	}
 
     if (item.nav_cmd == NAV_CMD_DO_SET_RELAY) {
-        PX4_INFO("DO_SET_RELAY command");
+        PX4_INFO("DO_SET_RELAY command triggered");
 
         relay_controls_s relay_control = {};
         relay_control.number = int(item.params[0]);

@@ -52,6 +52,7 @@
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vehicle_global_position.h>
 #include <uORB/topics/vtol_vehicle_status.h>
+#include <uORB/topics/relay_controls.h>
 
 class Navigator;
 
@@ -136,4 +137,5 @@ protected:
 	hrt_abstime _time_wp_reached{0};
 
 	uORB::Publication<actuator_controls_s>	_actuator_pub{ORB_ID(actuator_controls_2)};
+	uORB::Publication<relay_controls_s> _relay_pub(ORB_ID(relay_controls_0));
 };

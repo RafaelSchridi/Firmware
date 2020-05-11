@@ -1,6 +1,6 @@
-uint64 timestamp
-uint8 relaynr
+uint64 timestamp			# time since system start (microseconds)
+uint8 number
 bool state
 
-# TOPICS relay_controls relay_controls_0
+# TOPICS relay_controls
 

@@ -444,11 +444,11 @@ MissionBlock::issue_command(const mission_item_s &item)
     if (item.nav_cmd == NAV_CMD_DO_SET_RELAY) {
         PX4_INFO("DO_SET_RELAY command");
 
-		relay_controls_s relays = {};
-		relays.state = bool(int(item.params[1]));
-		relays.relaynr = int(item.params[0]);
+        relay_controls_s relay_control = {};
+        relay_control.number = int(item.params[0]);
+        relay_control.state = int(item.params[1]);
 
-		_relay_pub.publish(relays);
+        _relay_pub.publish(relay_control);
 
     }
 

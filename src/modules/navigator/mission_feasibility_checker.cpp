@@ -286,7 +286,7 @@ MissionFeasibilityChecker::checkMissionItemValidity(const mission_s &mission)
             }
 
             /* check actuator value */
-            if (missionitem.params[1] == 0 || missionitem.params[1] == 1) {
+            if (int(missionitem.params[1]) != 0 && int(missionitem.params[1]) != 1) {
                 mavlink_log_critical(_navigator->get_mavlink_log_pub(), "Relay value %d can only be 0(off) or 1(on)",
                                      (int)missionitem.params[1]);
                 return false;

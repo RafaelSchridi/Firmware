@@ -55,6 +55,7 @@
 #include <uORB/topics/actuator_controls.h>
 #include <uORB/topics/vehicle_command.h>
 #include <uORB/topics/vtol_vehicle_status.h>
+#include <uORB/topics/relay_controls.h>
 
 using matrix::wrap_pi;
 
@@ -444,8 +445,8 @@ MissionBlock::issue_command(const mission_item_s &item)
         PX4_INFO("DO_SET_RELAY command");
 
 		relay_controls_s relays = {};
-		relays.state = item.params[1];
-		relays.relayNr = item.params[0];
+		relays.state = bool(int(item.params[1]));
+		relays.relaynr = int(item.params[0]);
 
 		_relay_pub.publish(relays);
 

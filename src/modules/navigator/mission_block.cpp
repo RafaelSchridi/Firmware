@@ -43,6 +43,8 @@
 #include "mission_block.h"
 #include "navigator.h"
 
+#include <px4_config.h>
+
 #include <math.h>
 #include <float.h>
 
@@ -440,6 +442,13 @@ MissionBlock::issue_command(const mission_item_s &item)
 
     if (item.nav_cmd == NAV_CMD_DO_SET_RELAY) {
         PX4_INFO("DO_SET_RELAY command");
+
+		relay_controls_s relays = {};
+		relays.state = item.params[1];
+		relays.relayNr = item.params[0];
+
+		_relay_pub.publish(relays);
+
     }
 
 	if (item.nav_cmd == NAV_CMD_DO_SET_SERVO) {

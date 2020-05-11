@@ -234,6 +234,7 @@ MissionFeasibilityChecker::checkMissionItemValidity(const mission_s &mission)
 		    missionitem.nav_cmd != NAV_CMD_DO_CHANGE_SPEED &&
 		    missionitem.nav_cmd != NAV_CMD_DO_SET_HOME &&
 		    missionitem.nav_cmd != NAV_CMD_DO_SET_SERVO &&
+		    missionitem.nav_cmd != NAV_CMD_DO_SET_RELAY &&
 		    missionitem.nav_cmd != NAV_CMD_DO_LAND_START &&
 		    missionitem.nav_cmd != NAV_CMD_DO_TRIGGER_CONTROL &&
 		    missionitem.nav_cmd != NAV_CMD_DO_DIGICAM_CONTROL &&
@@ -273,6 +274,11 @@ MissionFeasibilityChecker::checkMissionItemValidity(const mission_s &mission)
 						     "Actuator value %d is out of bounds -PWM_DEFAULT_MAX..PWM_DEFAULT_MAX", (int)missionitem.params[1]);
 				return false;
 			}
+		}
+
+
+		if (missionitem.nav_cmd == NAV_CMD_DO_SET_RELAY) {
+
 		}
 
 		// check if the mission starts with a land command while the vehicle is landed
@@ -358,6 +364,7 @@ MissionFeasibilityChecker::checkTakeoff(const mission_s &mission, float home_alt
 			    missionitem.nav_cmd != NAV_CMD_DO_CHANGE_SPEED &&
 			    missionitem.nav_cmd != NAV_CMD_DO_SET_HOME &&
 			    missionitem.nav_cmd != NAV_CMD_DO_SET_SERVO &&
+			    missionitem.nav_cmd != NAV_CMD_DO_SET_RELAY &&
 			    missionitem.nav_cmd != NAV_CMD_DO_LAND_START &&
 			    missionitem.nav_cmd != NAV_CMD_DO_TRIGGER_CONTROL &&
 			    missionitem.nav_cmd != NAV_CMD_DO_DIGICAM_CONTROL &&

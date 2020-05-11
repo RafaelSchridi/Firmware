@@ -76,6 +76,7 @@ MissionBlock::is_mission_item_reached()
 
 	switch (_mission_item.nav_cmd) {
 	case NAV_CMD_DO_SET_SERVO:
+	case NAV_CMD_DO_SET_RELAY:
 		return true;
 
 	case NAV_CMD_LAND: /* fall through */
@@ -436,6 +437,10 @@ MissionBlock::issue_command(const mission_item_s &item)
 	if (item.nav_cmd == NAV_CMD_DO_LAND_START) {
 		return;
 	}
+
+    if (item.nav_cmd == NAV_CMD_DO_SET_RELAY) {
+        PX4_INFO("DO_SET_RELAY command");
+    }
 
 	if (item.nav_cmd == NAV_CMD_DO_SET_SERVO) {
 		PX4_INFO("DO_SET_SERVO command");

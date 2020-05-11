@@ -18,6 +18,7 @@
 #include <uORB/topics/vehicle_attitude.h>
 #include <uORB/topics/position_setpoint_triplet.h>
 #include <uORB/topics/vehicle_global_position.h>
+#include <uORB/topics/relay_controls.h>
 
 extern "C" __EXPORT int waypointdetect_main(int argc, char *argv[]);
 
@@ -58,25 +59,72 @@ WayPointDetect::~WayPointDetect() {
 
 void WayPointDetect::run() {
 
-    #if defined GPIO_GPIO0_OUTPUT
-    px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
-    px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
+    int relay_sub_fd = orb_subscribe(ORB_ID(relay_controls));
 
+    orb_set_interval(relay_sub_fd,200);
+
+//    struct relay_controls_s relays;
+//    memset(&relays,sizeoff(relays));
+//    or
+
+    px4_pollfd_struct_t fds[] = {
+            {.fd = relay_sub_fd, .events=POLLIN},
+    };
 
     while (true){
 
-        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,0);
+        int poll_ret = px4_poll(fds,1,1000);
 
-        px4_usleep(1000000);
+        if (poll_ret == 0){
+                        PX4_ERR("Got no data within a second");
+        }
 
-        px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,1);
+        else if (poll_ret < 0) {
+            /* this is seriously bad - should be an emergency */
 
-        px4_usleep(1000000);
+                /* use a counter to prevent flooding (and slowing us down) */
+                PX4_ERR("ERROR return value from poll(): %d", poll_ret);
+            }
 
-        PX4_INFO("this should do something");
 
+            else{
+                 if (fds[0].revents & POLLIN) {
+                     struct relay_controls_s raw;
+
+                     orb_copy(ORB_ID(relay_controls),relay_sub_fd,&raw);
+
+                     switch (raw.number){
+
+                         case 0:
+                             px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,raw.state);
+                         case 1:
+                             px4_arch_configgpio(GPIO_GPIO1_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO1_OUTPUT,raw.state);
+                         case 2:
+                             px4_arch_configgpio(GPIO_GPIO2_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO2_OUTPUT,raw.state);
+                         case 3:
+                             px4_arch_configgpio(GPIO_GPIO3_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO3_OUTPUT,raw.state);
+                         case 4:
+                             px4_arch_configgpio(GPIO_GPIO4_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO4_OUTPUT,raw.state);
+                         case 5:
+                             px4_arch_configgpio(GPIO_GPIO5_OUTPUT);
+                             px4_arch_gpiowrite(GPIO_GPIO5_OUTPUT,raw.state);
+
+                         default:
+                             continue;
+
+                     }
+
+
+                 }
+            }
     }
-    #endif
+
+
 }
 
 

@@ -98,24 +98,30 @@ void WayPointDetect::run() {
                          case 0:
                              px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,raw.state);
+                             break;
                          case 1:
                              px4_arch_configgpio(GPIO_GPIO1_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO1_OUTPUT,raw.state);
+                             break;
                          case 2:
                              px4_arch_configgpio(GPIO_GPIO2_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO2_OUTPUT,raw.state);
+                             break;
                          case 3:
                              px4_arch_configgpio(GPIO_GPIO3_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO3_OUTPUT,raw.state);
+                             break;
                          case 4:
                              px4_arch_configgpio(GPIO_GPIO4_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO4_OUTPUT,raw.state);
+                             break;
                          case 5:
                              px4_arch_configgpio(GPIO_GPIO5_OUTPUT);
                              px4_arch_gpiowrite(GPIO_GPIO5_OUTPUT,raw.state);
+                             break;
 
                          default:
-                             continue;
+                             break;
 
                      }
 

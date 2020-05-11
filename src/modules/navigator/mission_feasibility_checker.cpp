@@ -278,7 +278,19 @@ MissionFeasibilityChecker::checkMissionItemValidity(const mission_s &mission)
 
 
 		if (missionitem.nav_cmd == NAV_CMD_DO_SET_RELAY) {
+            /* check actuator number */
+            if (missionitem.params[0] < 0 || missionitem.params[0] > 5) {
+                mavlink_log_critical(_navigator->get_mavlink_log_pub(), "Relay number %d is out of bounds 0..5",
+                                     (int)missionitem.params[0]);
+                return false;
+            }
 
+            /* check actuator value */
+            if (missionitem.params[1] == 0 || missionitem.params[1] == 1) {
+                mavlink_log_critical(_navigator->get_mavlink_log_pub(), "Relay value %d can only be 0(off) or 1(on)",
+                                     (int)missionitem.params[1]);
+                return false;
+            }
 		}
 
 		// check if the mission starts with a land command while the vehicle is landed

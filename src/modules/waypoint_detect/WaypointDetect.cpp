@@ -59,13 +59,10 @@ WayPointDetect::~WayPointDetect() {
 
 void WayPointDetect::run() {
 
+
     int relay_sub_fd = orb_subscribe(ORB_ID(relay_controls));
 
     orb_set_interval(relay_sub_fd,200);
-
-//    struct relay_controls_s relays;
-//    memset(&relays,sizeoff(relays));
-//    or
 
     px4_pollfd_struct_t fds[] = {
             {.fd = relay_sub_fd, .events=POLLIN},
@@ -93,6 +90,8 @@ void WayPointDetect::run() {
 
                      orb_copy(ORB_ID(relay_controls),relay_sub_fd,&raw);
 
+                     PX4_INFO("%8.4f\t%8.4f",double(raw.number),double(raw.state));
+                    #if defined  GPIO_GPIO0_OUTPUT
                      switch (raw.number){
 
                          case 0:
@@ -124,12 +123,12 @@ void WayPointDetect::run() {
                              break;
 
                      }
+                    #endif
 
 
                  }
             }
     }
-
 
 }
 

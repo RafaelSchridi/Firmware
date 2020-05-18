@@ -44,6 +44,7 @@ void Gpio_Switching::run() {
 
     state = false;
     px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
+#if defined  GPIO_GPIO0_OUTPUT
 
     while (true){
         px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,!state);
@@ -52,6 +53,8 @@ void Gpio_Switching::run() {
 
         px4_sleep(1);
     }
+#endif
+
 }
 
 int Gpio_Switching::task_spawn(int argc, char **argv) {

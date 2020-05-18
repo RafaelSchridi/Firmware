@@ -43,8 +43,10 @@ Gpio_Switching::~Gpio_Switching() {
 void Gpio_Switching::run() {
 
     state = false;
+
+    #if defined  GPIO_GPIO0_OUTPUT
+
     px4_arch_configgpio(GPIO_GPIO0_OUTPUT);
-#if defined  GPIO_GPIO0_OUTPUT
 
     while (true){
         px4_arch_gpiowrite(GPIO_GPIO0_OUTPUT,!state);
